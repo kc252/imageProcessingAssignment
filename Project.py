@@ -54,7 +54,8 @@ def decode_image():
                     return message
 
 
-buttons = ["Encode", "Decode", "Exit"]
+
+buttons = []
 
 
 class SampleApp(tk.Tk):
@@ -71,15 +72,23 @@ class SampleApp(tk.Tk):
         self._frame = new_frame
 
 
+
+
+
 class StartPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
-        Label(self, text="Please choose a function", bg='dark gray', font=("Times", 20, 'bold'))
-        for i in range(len(buttons)):
-            Button(self, background="white", text=buttons[i], command=lambda: master.switch_frame(), height=15, width=15).grid(
-                row=i, column=0)
-            self.rowconfigure(i, weight=1)
+        Button(self, background="white", text="Encode", command=lambda: master.switch_frame(PageOne), height=15, width=15).grid(row=0, column=0)
+        self.rowconfigure(0, weight=1)
+
+        Button(self, background="white", text="Decode", command=lambda: master.switch_frame(PageTwo), height=15, width=15).grid(row=1, column=0)
+        self.rowconfigure(1, weight=1)
+
+        Button(self, background="white", text="Exit", command=lambda: master.switch_frame(PageOne), height=15, width=15).grid(row=2, column=0)
+        self.rowconfigure(2, weight=1)
+
+
 
         self.grid(row=0, column=0, sticky="nesw")
         sep = ttk.Separator(self, orient="vertical")
@@ -96,15 +105,13 @@ class PageOne(tk.Frame):
         tk.Button(self, text="Go back to start page",
                   command=lambda: master.switch_frame(StartPage)).pack()
 
-#class PageTwo(tk.Frame):
-
-
-
-class kill(tk.Frame):
-    tk.Frame.destroy()
-
-
-
+class PageTwo(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        tk.Frame.configure(self, bg='blue')
+        tk.Label(self, text="Page one", font=('Helvetica', 18, "bold")).pack(side="left", fill="x", pady=5)
+        tk.Button(self, text="Go back to start page",
+                  command=lambda: master.switch_frame(StartPage)).pack()
 
 if __name__ == "__main__":
     # img = encode_image()
