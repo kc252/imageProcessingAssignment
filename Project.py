@@ -1,15 +1,16 @@
+import math
 import cv2
-import sys
 import easygui
-import numpy as np
-from matplotlib import pyplot as plt
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 
 
 def char_generator():
+    # getting input from console for our secret message
     n = str(input("Enter a message to hide: "))
+    # for each character in the string convert it to unicode numbers and store it in a generator
+    # generators feed values in one by one using next()
     for c in n:
         yield ord(c)
 
@@ -22,34 +23,51 @@ def get_image():
 
 def gcd(a, b):
     # Calculate the Greatest Common Divisor of a and b.
-    while b:
-        a, b = b, a % b
-    return a
+    if b == 0:
+        return a
+    else:
+        return gcd(b, a % b)
 
 
 def encode_image():
-    img = get_image()
-    msg_gen = char_generator()
-    pattern = gcd(len(img), len(img[0]))
-    for i in range(len(img)):
-        for j in range(len(img[0])):
-            if (i + 1 * j + 1) % pattern == 0:
+    img = get_image()  # gets our rgb numpy array of the image
+    msg_gen = char_generator()  # our unicode values for the message in a generator
+    height, width, channels = img.shape  # getting dimensions of the image
+    channels -= 1  # taking 1 from 3 to be array friendly
+    pattern = gcd(height, width)  # this gets our gcd for the image to gather every nth pixel to embed
+    # this ensures that we do not alter each pixel sequentially which would make it obvious that the image was altered
+    # so with this method we get a more dispersed alteration
+    for i in range(height):  # nested for loop to loop through 2D array -> height pixels
+        for j in range(width):  # -> width pixels
+            if (i + 1 * j + 1) % pattern == 0:  # if it is divisible by our GCD
+                # (adding 1 to iteration to not just write to the first column/row
+                # on first iteration of either because 0 % any number is 0)
                 try:
-                    img[i - 1][j - 1][0] = next(msg_gen)
-                except StopIteration:
-                    img[i - 1][j - 1][0] = 0
-                    return img
+                    if channels == -1:  # channels must be 0,1 or 2 value -> RGB
+                        channels += 3  # add 3 to -1 to go back to B channel
+                    img[i - 1][j - 1][channels] = next(msg_gen)  # adding back the 1 we took away previously
+                    # to get our correct row and column
+                    channels -= 1  # take 1 away from channels to go to next color channel
+                except StopIteration:  # this indicates the final character in our generator
+                    img[i - 1][j - 1][channels] = 0  # adding the 1 back and making our terminating character to be 0
+                    # (this way in the decoder we can tell when we are on the end of our image
+                    return img  # return encoded image
 
 
 def decode_image():
-    img = get_image()
-    pattern = gcd(len(img), len(img[0]))
+    img = get_image()  # get image to be decoded
+    height, width, channels = img.shape  # getting dimensions of the image
+    channels -= 1
+    pattern = gcd(height, width)
     message = ''
-    for i in range(len(img)):
-        for j in range(len(img[0])):
+    for i in range(height):
+        for j in range(width):
             if (i - 1 * j - 1) % pattern == 0:
-                if img[i - 1][j - 1][0] != 0:
-                    message = message + chr(img[i - 1][j - 1][0])
+                if img[i - 1][j - 1][channels] != 0:
+                    message = message + chr(img[i - 1][j - 1][channels])
+                    channels -= 1
+                    if channels == -1:
+                        channels += 3
                 else:
                     return message
 
@@ -78,15 +96,19 @@ class Exit(tk.Frame):
         sys.exit(0)
 
 
+class DecodePage():
+    pass
+
+
 class StartPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
-        Button(self, background="white", text="Encode", command=lambda: master.switch_frame(PageOne), height=15,
+        Button(self, background="white", text="Encode", command=lambda: master.switch_frame(EncodePage), height=15,
                width=15).grid(row=0, column=0)
         self.rowconfigure(0, weight=1)
 
-        Button(self, background="white", text="Decode", command=lambda: master.switch_frame(PageTwo), height=15,
+        Button(self, background="white", text="Decode", command=lambda: master.switch_frame(DecodePage), height=15,
                width=15).grid(row=1, column=0)
         self.rowconfigure(1, weight=1)
 
@@ -101,7 +123,7 @@ class StartPage(tk.Frame):
         sep.grid(row=0, column=1, sticky="new")
 
 
-class PageOne(tk.Frame):
+class EncodePage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
@@ -109,7 +131,7 @@ class PageOne(tk.Frame):
                width=15).grid(row=0, column=0)
         self.rowconfigure(0, weight=1)
 
-        Button(self, background="white", text="Text", command=lambda: master.switch_frame(PageTwo), height=15,
+        Button(self, background="white", text="Text", command=lambda: master.switch_frame(TextEncodePage), height=15,
                width=15).grid(row=1, column=0)
         self.rowconfigure(1, weight=1)
 
@@ -124,23 +146,23 @@ class PageOne(tk.Frame):
         sep.grid(row=0, column=1, sticky="new")
 
 
-class PageTwo(tk.Frame):
+class TextEncodePage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
-        Button(self, background="white", text="Encode", command=lambda: master.switch_frame(PageOne), height=15,
+        Button(self, background="white", text="Encode", command=lambda: master.switch_frame(EncodePage), height=15,
                width=15).grid(row=0, column=0)
         self.rowconfigure(0, weight=1)
 
-        Button(self, background="white", text="Decode", command=lambda: master.switch_frame(PageTwo), height=15,
+        Button(self, background="white", text="Decode", command=lambda: master.switch_frame(TextEncodePage), height=15,
                width=15).grid(row=1, column=0)
         self.rowconfigure(1, weight=1)
 
-        Button(self, background="white", text="Exit", command=lambda: master.switch_frame(PageOne), height=15,
+        Button(self, background="white", text="Exit", command=lambda: master.switch_frame(EncodePage), height=15,
                width=15).grid(row=2, column=0)
         self.rowconfigure(2, weight=1)
 
-        self.grid(row=0, column=0, sticky="nesw")
+        self.grid(row=0, column=0, sticky="new")
         sep = ttk.Separator(self, orient="vertical")
         sep.rowconfigure(0, weight=1)
         sep.columnconfigure(1, weight=1)
@@ -149,12 +171,12 @@ class PageTwo(tk.Frame):
 
 if __name__ == "__main__":
     # encode
-    # img = encode_image()
-    # print "Image Encoded Sucessfully"
-    # cv2.imwrite("output.jpeg", img)
+    img = encode_image()
+    print "Image Encoded Successfully"
+    cv2.imwrite("output.png", img)
 
     # decode
-    # print(decode_image())
+    print(decode_image())
 
     window = SampleApp()
     window.geometry("1000x500")
