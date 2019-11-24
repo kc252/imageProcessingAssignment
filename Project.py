@@ -20,11 +20,11 @@ def get_image():
     return I
 
 
-def gcd(x, y):
-    while (y):
-        x, y = y, x % y
-
-    return x
+def gcd(a, b):
+    # Calculate the Greatest Common Divisor of a and b.
+    while b:
+        a, b = b, a % b
+    return a
 
 
 def encode_image():
@@ -54,10 +54,6 @@ def decode_image():
                     return message
 
 
-
-buttons = []
-
-
 class SampleApp(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
@@ -72,23 +68,31 @@ class SampleApp(tk.Tk):
         self._frame = new_frame
 
 
+class Exit(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        self.quit()
 
+    def quit(self):
+        self.master.destroy()
+        sys.exit(0)
 
 
 class StartPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
-        Button(self, background="white", text="Encode", command=lambda: master.switch_frame(PageOne), height=15, width=15).grid(row=0, column=0)
+        Button(self, background="white", text="Encode", command=lambda: master.switch_frame(PageOne), height=15,
+               width=15).grid(row=0, column=0)
         self.rowconfigure(0, weight=1)
 
-        Button(self, background="white", text="Decode", command=lambda: master.switch_frame(PageTwo), height=15, width=15).grid(row=1, column=0)
+        Button(self, background="white", text="Decode", command=lambda: master.switch_frame(PageTwo), height=15,
+               width=15).grid(row=1, column=0)
         self.rowconfigure(1, weight=1)
 
-        Button(self, background="white", text="Exit", command=lambda: master.switch_frame(PageOne), height=15, width=15).grid(row=2, column=0)
+        Button(self, background="white", text="Exit", command=lambda: master.switch_frame(Exit), height=15,
+               width=15).grid(row=2, column=0)
         self.rowconfigure(2, weight=1)
-
-
 
         self.grid(row=0, column=0, sticky="nesw")
         sep = ttk.Separator(self, orient="vertical")
@@ -100,24 +104,56 @@ class StartPage(tk.Frame):
 class PageOne(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        tk.Frame.configure(self, bg='blue')
-        tk.Label(self, text="Page one", font=('Helvetica', 18, "bold")).pack(side="left", fill="x", pady=5)
-        tk.Button(self, text="Go back to start page",
-                  command=lambda: master.switch_frame(StartPage)).pack()
+
+        Button(self, background="white", text="Image", command=lambda: master.switch_frame(), height=15,
+               width=15).grid(row=0, column=0)
+        self.rowconfigure(0, weight=1)
+
+        Button(self, background="white", text="Text", command=lambda: master.switch_frame(PageTwo), height=15,
+               width=15).grid(row=1, column=0)
+        self.rowconfigure(1, weight=1)
+
+        Button(self, background="white", text="Back", command=lambda: master.switch_frame(StartPage), height=15,
+               width=15).grid(row=2, column=0)
+        self.rowconfigure(2, weight=1)
+
+        self.grid(row=0, column=0, sticky="nesw")
+        sep = ttk.Separator(self, orient="vertical")
+        sep.rowconfigure(0, weight=1)
+        sep.columnconfigure(1, weight=1)
+        sep.grid(row=0, column=1, sticky="new")
+
 
 class PageTwo(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        tk.Frame.configure(self, bg='blue')
-        tk.Label(self, text="Page one", font=('Helvetica', 18, "bold")).pack(side="left", fill="x", pady=5)
-        tk.Button(self, text="Go back to start page",
-                  command=lambda: master.switch_frame(StartPage)).pack()
+
+        Button(self, background="white", text="Encode", command=lambda: master.switch_frame(PageOne), height=15,
+               width=15).grid(row=0, column=0)
+        self.rowconfigure(0, weight=1)
+
+        Button(self, background="white", text="Decode", command=lambda: master.switch_frame(PageTwo), height=15,
+               width=15).grid(row=1, column=0)
+        self.rowconfigure(1, weight=1)
+
+        Button(self, background="white", text="Exit", command=lambda: master.switch_frame(PageOne), height=15,
+               width=15).grid(row=2, column=0)
+        self.rowconfigure(2, weight=1)
+
+        self.grid(row=0, column=0, sticky="nesw")
+        sep = ttk.Separator(self, orient="vertical")
+        sep.rowconfigure(0, weight=1)
+        sep.columnconfigure(1, weight=1)
+        sep.grid(row=0, column=1, sticky="new")
+
 
 if __name__ == "__main__":
+    # encode
     # img = encode_image()
     # print "Image Encoded Sucessfully"
     # cv2.imwrite("output.jpeg", img)
 
+    # decode
     # print(decode_image())
 
     window = SampleApp()
