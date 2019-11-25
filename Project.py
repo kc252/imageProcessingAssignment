@@ -286,6 +286,7 @@ if __name__ == "__main__":
             decodedImage = decodeImageFromImage(image)
             cv2.imwrite("decodedImagefromImage.png", decodedImage)
             msgbox("Image Decoded Successfully!")
+            cv2.imshow("Decoded Image", decodedImage)
 
     # decode
     # print(decode_image())
