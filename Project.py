@@ -257,8 +257,8 @@ if __name__ == "__main__":
             message = enterbox("Enter secret message: ")
             msgbox("Please choose image to encode:")
             img = encode_image(message)
-            print "Image Encoded Successfully"
-            cv2.imwrite("output.png", img)
+            cv2.imwrite("textEncodedImage.png", img)
+            msgbox("Image Encoded Successfully!")
 
         elif choice == "Image":
             msgbox("Please choose image to hide:")
@@ -266,8 +266,8 @@ if __name__ == "__main__":
             msgbox("Please choose image to cover:")
             i1 = get_image()
             img = encodeImageToImage(i1, i2)
-            print "Image Decoded Successfully"
-            cv2.imwrite("output2.png", img)
+            cv2.imwrite("imageEncodedImage.png", img)
+            msgbox("Image Encoded Successfully!")
 
     elif choice == "Decode":
         msg = "Decode image from image or text from image: "
@@ -284,8 +284,8 @@ if __name__ == "__main__":
             msgbox("Choose image to decode: ")
             image = get_image()
             decodedImage = decodeImageFromImage(image)
-            cv2.imwrite("decodedImage.png",decodedImage)
-            print "Image Decoded Successfully"
+            cv2.imwrite("decodedImagefromImage.png", decodedImage)
+            msgbox("Image Decoded Successfully!")
 
     # decode
     # print(decode_image())
