@@ -1,4 +1,6 @@
 import math
+import tkFileDialog
+
 import cv2
 import easygui
 import tkinter as tk
@@ -17,15 +19,9 @@ def char_generator(var):
         yield ord(c)
 
 
-def get_image():
-    f = easygui.fileopenbox()
+def get_image(f):
     I = cv2.imread(f)
-    try:
-        rgbImg = cv2.cvtColor(I, cv2.COLOR_BGR2RGB)
-    except cv2.error:
-        print("Incorrect input type, please select an image of appropriate type")
-        exit(1)
-    return rgbImg
+    return I
 
 
 def gcd(a, b):
@@ -36,9 +32,9 @@ def gcd(a, b):
         return gcd(b, a % b)
 
 
-def encode_image():
-    img = get_image()  # gets our rgb numpy array of the image
-    msg_gen = char_generator()  # our unicode values for the message in a generator
+def encode_image(image, msg):
+    img = get_image(image)  # gets our rgb numpy array of the image
+    msg_gen = char_generator(msg)  # our unicode values for the message in a generator
     height, width, channels = img.shape  # getting dimensions of the image
     channels -= 1  # taking 1 from 3 to be array friendly
     pattern = gcd(height, width)  # this gets our gcd for the image to gather every nth pixel to embed
@@ -61,8 +57,8 @@ def encode_image():
                     return img  # return encoded image
 
 
-def decode_image():
-    img = get_image()  # get image to be decoded
+def decode_image(image):
+    img = get_image(image)  # get image to be decoded
     height, width, channels = img.shape  # getting dimensions of the image
     channels -= 1  # taking 1 from 3 to be array friendly
     pattern = gcd(height, width)  # getting gcd same as encode
@@ -204,8 +200,14 @@ class StartPage(tk.Frame):
         sep.grid(row=0, column=1, sticky="new")
 
 
+def openFile(image):
+    image = tkFileDialog.askopenfilename(filetypes=[("Image File", '.png')])
+    print image
+    return image
+
+
 class EncodePage(tk.Frame):
-    def __init__(self, master, myvar=None):
+    def __init__(self, master):
         tk.Frame.__init__(self, master)
 
         Button(self, background="white", text="Back", command=lambda: master.switch_frame(StartPage), height=15,
@@ -218,33 +220,25 @@ class EncodePage(tk.Frame):
         sep.columnconfigure(1, weight=1)
         sep.grid(row=0, column=1, sticky="new")
 
-        Label(self, text="Enter a message to hide: ").grid(row=2, column=2)
-        Entry(self, textvariable=myvar).grid(row=2, column=3)
+        entry_text = None
+        image = None
 
-        char_generator(myvar)
+        Label(self, text="Enter a message to hide: ", padx=20).grid(row=2, column=2)
+        Entry(self, textvariable=entry_text).grid(row=2, column=3)
+        Button(self, background="white", text="File",
+               command=lambda: openFile(image),
+               height=2,
+               width=5).grid(row=3, column=3)
+        Button(self, background="white", text="Next ->",
+               command=lambda: encode_image(image, entry_text),
+               height=2,
+               width=5).grid(row=4, column=3)
 
+        Button(self, background="white", text="Enter",
+               command=lambda:  entry_text.get(),
+               height=2,
+               width=5).grid(row=2, column=5)
 
-class TextEncodePage(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-
-        Button(self, background="white", text="Encode", command=lambda: master.switch_frame(EncodePage), height=15,
-               width=15).grid(row=0, column=0)
-        self.rowconfigure(0, weight=1)
-
-        Button(self, background="white", text="Decode", command=lambda: master.switch_frame(TextEncodePage), height=15,
-               width=15).grid(row=1, column=0)
-        self.rowconfigure(1, weight=1)
-
-        Button(self, background="white", text="Exit", command=lambda: master.switch_frame(EncodePage), height=15,
-               width=15).grid(row=2, column=0)
-        self.rowconfigure(2, weight=1)
-
-        self.grid(row=0, column=0, sticky="nesw")
-        sep = ttk.Separator(self, orient="vertical")
-        sep.rowconfigure(0, weight=1)
-        sep.columnconfigure(1, weight=1)
-        sep.grid(row=0, column=1, sticky="new")
 
 
 if __name__ == "__main__":
@@ -256,18 +250,18 @@ if __name__ == "__main__":
     # # decode
     # print(decode_image())
 
-    img = get_image()
-    img2 = get_image()
-    img3 = encodeImageToImage(img, img2)
-    img4 = decodeImageFromImage(img3)
-
-    plt.imshow(img3)
-    plt.imshow(img4)
-    plt.show()
-
-    print(img.size)
-    x, y, z = img.shape
-    print(x * y * z)
+    # img = get_image()
+    # img2 = get_image()
+    # img3 = encodeImageToImage(img, img2)
+    # img4 = decodeImageFromImage(img3)
+    #
+    # plt.imshow(img3)
+    # plt.imshow(img4)
+    # plt.show()
+    #
+    # print(img.size)
+    # x, y, z = img.shape
+    # print(x * y * z)
 
     window = SampleApp()
     window.geometry("1000x500")
