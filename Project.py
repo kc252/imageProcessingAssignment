@@ -1,6 +1,7 @@
 import cv2
 import easygui
-from easygui import choicebox, enterbox, textbox, msgbox
+from PIL import Image
+from easygui import choicebox, enterbox, textbox, msgbox, buttonbox
 
 
 def char_generator(var):
@@ -138,7 +139,6 @@ def decodeBits(inputVal):
     # print("Green: " + greenBin)
     # print("Red: " + redBin)
 
-    print(redBin[-2:] + " 000000")
     redBin = redBin[-2:] + '000000'
     greenBin = greenBin[-2:] + '000000'
     blueBin = blueBin[-2:] + '000000'
@@ -286,7 +286,8 @@ if __name__ == "__main__":
             decodedImage = decodeImageFromImage(image)
             cv2.imwrite("decodedImagefromImage.png", decodedImage)
             msgbox("Image Decoded Successfully!")
-            cv2.imshow("Decoded Image", decodedImage)
+            result = Image.open("decodedImagefromImage.png")
+            result.show()
 
     # decode
     # print(decode_image())
