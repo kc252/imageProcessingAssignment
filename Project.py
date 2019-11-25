@@ -2,6 +2,16 @@ import cv2
 import easygui
 from easygui import choicebox, enterbox, textbox, msgbox
 
+"""
+The encode image to image function works by looping through the cover image, as it's the larger of the two, and for each
+pixel that overlaps with the target image, it calls the encodeBits function, placing the result in the output image. 
+The encodeBits function works through using string manipulation and conversion from binary to interger to add the first 
+two binary digits of the target image, and uses them to replace the last two binary digits of the cover image.
+The decode image from image function, similarly to the encode image to image function although this time it calls the 
+decodeBits function to remove the last 2 bits of the input after it's converted to binary, and placing them at the start
+of a string of 6 0s, thus making them the most significant bits, and the most visible bits.
+"""
+
 
 def char_generator(var):
     # getting input from console for our secret message
@@ -82,12 +92,10 @@ def encodeImageToImage(i1, i2):
         for i in range(0, x1):
             for j in range(0, y1):
                 if i < x2 or j < y2:
-                    ##print(i2[i, j])
                     i3[i, j] = encodeBits(i1[i, j], i2[i, j])
                 else:
                     print("Outside bounds of Hidden, painting black")
                     i3[i, j] = encodeBits(i1[i, j], (0, 0, 0))
-                # print(i3[i, j])
         return i3
 
 
@@ -103,29 +111,23 @@ def decodeImageFromImage(i1):
 # in = colourCover, colourHidden; out = colourEncoded
 def encodeBits(coverVal, hiddenVal):
     # convert the cover to binary
-    # print("##########")
-    ##print(hiddenVal)
     redBinCover = '{0:08b}'.format(coverVal[0])
     greenBinCover = '{0:08b}'.format(coverVal[1])
     blueBinCover = '{0:08b}'.format(coverVal[2])
-    # print(blueBinCover)
+
     # cut off the end 2 characters
     redBinCover = redBinCover[:-2]
     greenBinCover = greenBinCover[:-2]
     blueBinCover = blueBinCover[:-2]
-    ##print(blueBinCover)
 
     redBinHidden = '{0:08b}'.format(hiddenVal[0])
     greenBinHidden = '{0:08b}'.format(hiddenVal[1])
     blueBinHidden = '{0:08b}'.format(hiddenVal[2])
-    # print("ToHide: "+blueBinHidden)
 
     # Add one to the end of the other.
     redBinCover = redBinCover + redBinHidden[:2]
     greenBinCover = greenBinCover + greenBinHidden[:2]
     blueBinCover = blueBinCover + blueBinHidden[:2]
-    # print(blueBinCover)
-    # print(int(redBinCover, 2), int(greenBinCover, 2), int(blueBinCover, 2))
 
     return int(redBinCover, 2), int(greenBinCover, 2), int(blueBinCover, 2)
 
@@ -134,9 +136,7 @@ def decodeBits(inputVal):
     redBin = '{0:08b}'.format(inputVal[0])
     greenBin = '{0:08b}'.format(inputVal[1])
     blueBin = '{0:08b}'.format(inputVal[2])
-    # print("Blue: " + blueBin)
-    # print("Green: " + greenBin)
-    # print("Red: " + redBin)
+
 
     print(redBin[-2:] + " 000000")
     redBin = redBin[-2:] + '000000'
@@ -257,7 +257,7 @@ if __name__ == "__main__":
             message = enterbox("Enter secret message: ")
             msgbox("Please choose image to encode:")
             img = encode_image(message)
-            print "Image Encoded Successfully"
+            print("Image Encoded Successfully")
             cv2.imwrite("output.png", img)
 
         elif choice == "Image":
@@ -266,7 +266,7 @@ if __name__ == "__main__":
             msgbox("Please choose image to cover:")
             i1 = get_image()
             img = encodeImageToImage(i1, i2)
-            print "Image Decoded Successfully"
+            print("Image Decoded Successfully")
             cv2.imwrite("output2.png", img)
 
     elif choice == "Decode":
@@ -285,7 +285,7 @@ if __name__ == "__main__":
             image = get_image()
             decodedImage = decodeImageFromImage(image)
             cv2.imwrite("decodedImage.png",decodedImage)
-            print "Image Decoded Successfully"
+            print("Image Decoded Successfully")
 
     # decode
     # print(decode_image())
