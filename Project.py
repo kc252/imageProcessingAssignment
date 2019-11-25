@@ -4,6 +4,7 @@ import easygui
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from matplotlib import pyplot as plt
 
 
 def char_generator():
@@ -248,7 +249,7 @@ class TextEncodePage(tk.Frame):
 if __name__ == "__main__":
     # encode
     img = encode_image()
-    print "Image Encoded Successfully"
+    print("Image Encoded Successfully")
     cv2.imwrite("output.png", img)
 
     # decode
