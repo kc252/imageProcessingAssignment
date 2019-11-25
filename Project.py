@@ -1,6 +1,7 @@
 import cv2
 import easygui
-from easygui import choicebox, enterbox, textbox, msgbox
+from PIL import Image
+from easygui import choicebox, enterbox, textbox, msgbox, buttonbox
 
 """
 The encode image to image function works by looping through the cover image, as it's the larger of the two, and for each
@@ -138,7 +139,6 @@ def decodeBits(inputVal):
     blueBin = '{0:08b}'.format(inputVal[2])
 
 
-    print(redBin[-2:] + " 000000")
     redBin = redBin[-2:] + '000000'
     greenBin = greenBin[-2:] + '000000'
     blueBin = blueBin[-2:] + '000000'
@@ -257,8 +257,9 @@ if __name__ == "__main__":
             message = enterbox("Enter secret message: ")
             msgbox("Please choose image to encode:")
             img = encode_image(message)
-            print("Image Encoded Successfully")
-            cv2.imwrite("output.png", img)
+
+            cv2.imwrite("textEncodedImage.png", img)
+            msgbox("Image Encoded Successfully!")
 
         elif choice == "Image":
             msgbox("Please choose image to hide:")
@@ -266,8 +267,9 @@ if __name__ == "__main__":
             msgbox("Please choose image to cover:")
             i1 = get_image()
             img = encodeImageToImage(i1, i2)
-            print("Image Decoded Successfully")
-            cv2.imwrite("output2.png", img)
+
+            cv2.imwrite("imageEncodedImage.png", img)
+            msgbox("Image Encoded Successfully!")
 
     elif choice == "Decode":
         msg = "Decode image from image or text from image: "
@@ -284,8 +286,11 @@ if __name__ == "__main__":
             msgbox("Choose image to decode: ")
             image = get_image()
             decodedImage = decodeImageFromImage(image)
-            cv2.imwrite("decodedImage.png",decodedImage)
-            print("Image Decoded Successfully")
+
+            cv2.imwrite("decodedImagefromImage.png", decodedImage)
+            msgbox("Image Decoded Successfully!")
+            result = Image.open("decodedImagefromImage.png")
+            result.show()
 
     # decode
     # print(decode_image())
