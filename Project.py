@@ -1,5 +1,5 @@
 import math
-import tkFileDialog
+#import tkFileDialog
 import cv2
 import easygui
 import tkinter as tk
@@ -140,14 +140,14 @@ def decodeBits(inputVal):
     redBin = '{0:08b}'.format(inputVal[0])
     greenBin = '{0:08b}'.format(inputVal[1])
     blueBin = '{0:08b}'.format(inputVal[2])
-    print("Blue: " + blueBin)
-    print("Green: " + greenBin)
-    print("Red: " + redBin)
+    #print("Blue: " + blueBin)
+    #print("Green: " + greenBin)
+    #print("Red: " + redBin)
 
-    # print(redBin + " " + redBin[:-2])
-    redBin = redBin[2:] + '0000'
-    greenBin = greenBin[2:] + '0000'
-    blueBin = blueBin[2:] + '0000'
+    print(redBin[-2:] + " 000000")
+    redBin = redBin[-2:] + '000000'
+    greenBin = greenBin[-2:] + '000000'
+    blueBin = blueBin[-2:] + '000000'
 
 
     return int(redBin, 2), int(greenBin, 2), int(blueBin, 2)
@@ -205,7 +205,7 @@ class StartPage(tk.Frame):
 
 
 def openFile(image):
-    image = tkFileDialog.askopenfilename(filetypes=[("Image File", '.png')])
+    #image = tkFileDialog.askopenfilename(filetypes=[("Image File", '.png')])
     print(image)
     return image
 
@@ -254,9 +254,10 @@ if __name__ == "__main__":
     # # decode
     # print(decode_image())
 
-
-    img = get_image()
-    img2 = get_image()
+    f1 = easygui.fileopenbox()
+    img = get_image(f1)
+    f2 = easygui.fileopenbox()
+    img2 = get_image(f2)
     img3 = encodeImageToImage(img, img2)
     img4 = decodeImageFromImage(img3)
 
@@ -264,9 +265,12 @@ if __name__ == "__main__":
     plt.imshow(img4)
     plt.show()
 
-    print(img.size)
-    x, y, z = img.shape
-    print(x * y * z)
+    #stuff = "Example"
+    #print(stuff[-2:])
+
+    #print(img.size)
+    #x, y, z = img.shape
+    #print(x * y * z)
 
 
     window = SampleApp()
