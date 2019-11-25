@@ -2,6 +2,7 @@ import math
 import cv2
 import easygui
 import tkinter as tk
+import matplotlib as plt
 from tkinter import *
 from tkinter import ttk
 from matplotlib import pyplot as plt
@@ -63,19 +64,19 @@ def encode_image():
 def decode_image():
     img = get_image()  # get image to be decoded
     height, width, channels = img.shape  # getting dimensions of the image
-    channels -= 1 # taking 1 from 3 to be array friendly
-    pattern = gcd(height, width) # getting gcd same as encode
-    message = '' # empty string var for getting message to return
-    for i in range(height): # looping array height pixels
-        for j in range(width): # width pixels
-            if (i - 1 * j - 1) % pattern == 0: # same as encode if divisible by gcd evenly (taking 1 away again)
-                if img[i - 1][j - 1][channels] != 0: # if it is not the terminal character "0"
-                    message = message + chr(img[i - 1][j - 1][channels]) # append char to string var
-                    channels -= 1 # change color channel
-                    if channels == -1: #if color channel is below zero loop back to 2
+    channels -= 1  # taking 1 from 3 to be array friendly
+    pattern = gcd(height, width)  # getting gcd same as encode
+    message = ''  # empty string var for getting message to return
+    for i in range(height):  # looping array height pixels
+        for j in range(width):  # width pixels
+            if (i - 1 * j - 1) % pattern == 0:  # same as encode if divisible by gcd evenly (taking 1 away again)
+                if img[i - 1][j - 1][channels] != 0:  # if it is not the terminal character "0"
+                    message = message + chr(img[i - 1][j - 1][channels])  # append char to string var
+                    channels -= 1  # change color channel
+                    if channels == -1:  # if color channel is below zero loop back to 2
                         channels += 3
                 else:
-                    return message # if terminal char reached return message
+                    return message  # if terminal char reached return message
 
 
 # encodeImageToImage(cover,hidden)
@@ -89,16 +90,17 @@ def encodeImageToImage(i1, i2):
         print(i2.size)
     else:
         print("Correct size")
-        #print("Size is X:"+x1+" Y:"+y1)
+        # print("Size is X:"+x1+" Y:"+y1)
         for i in range(x1):
             for j in range(y1):
                 if i > x2 or j > y2:
-                    #print("Outside bounds of Hidden, painting black")
+                    # print("Outside bounds of Hidden, painting black")
                     i3[i, j] = encodeBits(i1[i, j], (0, 0, 0))
                 else:
                     i3[i, j] = encodeBits(i1[i, j], i2[i, j])
-                #print(i3[i, j])
+                # print(i3[i, j])
         return i3
+
 
 def decodeImageFromImage(i1):
     i2 = i1
@@ -108,7 +110,8 @@ def decodeImageFromImage(i1):
             i2[i, j] = decodeBits(i1[i, j])
     return i2
 
-#in = colourCover, colourHidden; out = colourEncoded
+
+# in = colourCover, colourHidden; out = colourEncoded
 def encodeBits(coverVal, hiddenVal):
     # convert the cover to binary
     print("##########")
@@ -132,9 +135,9 @@ def encodeBits(coverVal, hiddenVal):
     redBinCover = redBinCover + redBinHidden[-2:]
     greenBinCover = greenBinCover + greenBinHidden[-2:]
     blueBinCover = blueBinCover + blueBinHidden[-2:]
-    #print(redBinCover)
+    # print(redBinCover)
 
-    return (int(redBinCover, 2), int(greenBinCover, 2), int(blueBinCover, 2))
+    return int(redBinCover, 2), int(greenBinCover, 2), int(blueBinCover, 2)
 
 
 def decodeBits(inputVal):
@@ -142,12 +145,13 @@ def decodeBits(inputVal):
     greenBin = format(inputVal[1], '08b')
     blueBin = format(inputVal[2], '08b')
 
-    #print(redBin + " " + redBin[:-2])
+    # print(redBin + " " + redBin[:-2])
     redBin = redBin[:-2] + '000000'
     greenBin = greenBin[:-2] + '000000'
     blueBin = blueBin[:-2] + '000000'
 
-    return (int(redBin, 2), int(greenBin, 2), int(blueBin, 2))
+    return int(redBin, 2), int(greenBin, 2), int(blueBin, 2)
+
 
 class SampleApp(tk.Tk):
     def __init__(self):
@@ -215,7 +219,7 @@ class EncodePage(tk.Frame):
         sep.grid(row=0, column=1, sticky="new")
 
         Label(self, text="Enter a message to hide: ").grid(row=2, column=2)
-        Entry(self,  textvariable=myvar).grid(row=2, column=3)
+        Entry(self, textvariable=myvar).grid(row=2, column=3)
 
         char_generator(myvar)
 
@@ -252,11 +256,9 @@ if __name__ == "__main__":
     # # decode
     # print(decode_image())
 
-
-
     img = get_image()
     img2 = get_image()
-    img3 = encodeImageToImage(img,img2)
+    img3 = encodeImageToImage(img, img2)
     img4 = decodeImageFromImage(img3)
 
     plt.imshow(img3)
@@ -265,7 +267,7 @@ if __name__ == "__main__":
 
     print(img.size)
     x, y, z = img.shape
-    print(x*y*z)
+    print(x * y * z)
 
     window = SampleApp()
     window.geometry("1000x500")
