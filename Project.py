@@ -4,6 +4,15 @@ from PIL import Image
 from easygui import choicebox, enterbox, textbox, msgbox, buttonbox
 
 """
+The encode text to image function works by getting the gcd of both the height and width of the image and using that as the 
+pattern for encoding bits of the message which is stored in a char generator. The generator feeds in char values one by one
+until the end of the message then it sends the terminal value "0" which is then also stored. The image is looped in a nested
+for loop to go through each and every pixel in the image, if it is divisible by the gcd then one of the chars of the text is 
+stored in either the red, blue or green channel of the pixel, then the next channel is picked and the for loop continues.
+When decoding, the image is again parsed and getting the gcd of width and height we know where the pixels are to decode
+so if they are divisible we then append their value to an empty string. We know when we reach "0" that we have reached the terminal character
+therefore we are at the end and we return the string we retrieve from the image.
+
 The encode image to image function works by looping through the cover image, as it's the larger of the two, and for each
 pixel that overlaps with the target image, it calls the encodeBits function, placing the result in the output image. 
 The encodeBits function works through using string manipulation and conversion from binary to interger to add the first 
@@ -254,7 +263,7 @@ if __name__ == "__main__":
         choice = choicebox(msg, title, choices)
 
         if choice == "Text":
-            message = enterbox("Enter secret message: ")
+            message = enterbox("Enter secret message (must include surrounding \" \"): ")
             msgbox("Please choose image to encode:")
             img = encode_image(message)
 
