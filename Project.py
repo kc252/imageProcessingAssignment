@@ -4,6 +4,7 @@ import easygui
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from matplotlib import pyplot as plt
 import tkinter.filedialog as fdialog
 
 
